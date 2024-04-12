@@ -1,6 +1,11 @@
 package task
 
-import "fmt"
+import (
+	"bufio"
+	"encoding/json"
+	"fmt"
+	"os"
+)
 
 type Task struct {
 	ID       int    `json:"id"`
@@ -25,7 +30,11 @@ func AddTask(c string, tasks []Task) []Task {
 }
 
 func DeleteTask(id int, tasks []Task) []Task {
-	tasks = append(tasks[:id], tasks[id+1:]...)
+	for _, v := range tasks {
+		if v.ID == id {
+			return append(tasks[:id], tasks[id+1:]...)
+		}
+	}
 	return tasks
 }
 
@@ -34,4 +43,30 @@ func AutoTaskID(tasks []Task) int {
 		return 1
 	}
 	return tasks[len(tasks)-1].ID + 1
+}
+
+func SaveTask(file *os.File, tasks []Task) {
+	bytes, err := json.Marshal(tasks)
+	if err != nil {
+		panic(err)
+	}
+	_, err = file.Seek(0, 0)
+	if err != nil {
+		panic(err)
+	}
+
+	err = file.Truncate(0)
+	if err != nil {
+		panic(err)
+	}
+
+	writer := bufio.NewWriter(file)
+	_, err = writer.Write(bytes)
+	if err != nil {
+		panic(err)
+	}
+	err = writer.Flush()
+	if err != nil {
+		panic(err)
+	}
 }

@@ -32,9 +32,7 @@ func main() {
 
 		palabras := strings.Fields(entrada)
 
-		if palabras[0] == "" {
-			OptionsMenu()
-		} else if palabras[0] == "list" {
+		if palabras[0] == "list" {
 			if info.Size() != 0 {
 				task.ListTask(tasks)
 			} else {
@@ -44,16 +42,24 @@ func main() {
 			fmt.Println("Cuál es tu tarea?")
 			entrada, _ := reader.ReadString('\n')
 			tasks = task.AddTask(entrada, tasks)
+			task.SaveTask(file, tasks)
+			file.Stat()
+
 		} else if palabras[0] == "delete" {
 			fmt.Println("Que tarea quieres eliminar?")
 			task.ListTask(tasks)
 			var idTask int
-			_, err := fmt.Scan(&idTask)
-			task.DeleteTask()
+			idTask, err = fmt.Scan(&idTask)
+			if err != nil {
+				panic(err)
+			}
+			tasks = task.DeleteTask(idTask, tasks)
+			task.SaveTask(file, tasks)
+			file.Stat()
 		}
 	}
 }
 
 func OptionsMenu() {
-	fmt.Println("Opciones: list | add | delete | update")
+	fmt.Println("Opciones: list | add | delete | update | complete | exit")
 }
