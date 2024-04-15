@@ -57,8 +57,13 @@ func main() {
 				fmt.Println("Cuál es tu tarea?")
 				entrada, _ = reader.ReadString('\n')
 				entrada = strings.TrimSpace(entrada)
-				tasks = task.AddTask(entrada, tasks)
-				task.SaveTask(file, tasks)
+				if entrada != "" {
+					tasks = task.AddTask(entrada, tasks)
+					task.SaveTask(file, tasks)
+				} else {
+					fmt.Println("No has ingresado ningún dato.")
+				}
+
 			} else if palabras[0] == "delete" {
 				if len(tasks) == 0 {
 					fmt.Println("No hay tareas.")
